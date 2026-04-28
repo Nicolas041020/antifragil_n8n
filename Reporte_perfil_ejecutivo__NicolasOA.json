@@ -1,0 +1,379 @@
+{
+  "name": "Reporte_perfil_ejecutivo__NicolasOA",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "Create a expert specific version of the letter and create a doc version of it. Store this on the Google Drive",
+        "height": 432,
+        "width": 1248
+      },
+      "id": "72ce92ab-f11a-4fa3-95eb-502272036637",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        -160
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Join experts and profiles tables\nSELECT \n    e.*,  -- All columns from experts table\n    p.*   -- All columns from profiles table\nFROM \n    experts e\nJOIN \n    profiles p ON p.expert_id = e.id\nWHERE \n    e.id = '{{ $json.expertid }}'::uuid;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        720,
+        -64
+      ],
+      "id": "253ffc5e-de6d-4765-8592-266c959a433a",
+      "name": "find_ID",
+      "credentials": {
+        "postgres": {
+          "id": "8Vsg8mH2MXaNyetU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "[nombre]",
+              "replaceText": "={{ $('find_ID').item.json.nombre }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[resumen_general]",
+              "replaceText": "={{ $('find_ID').item.json.resumen_antifragil }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[trayectoria]",
+              "replaceText": "={{ $('find_ID').item.json.trayectoria }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[indicadores]",
+              "replaceText": "={{ $('find_ID').item.json.IndicadoresAF }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[valor_estrategico]",
+              "replaceText": "={{ $('find_ID').item.json.valor_estrategico }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[recomendacion]",
+              "replaceText": "={{ $('find_ID').item.json.recomendacion }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[ocupacion]",
+              "replaceText": "={{ $('find_ID').item.json.ocupacion_actual }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[profesion]",
+              "replaceText": "={{ $('find_ID').item.json.profesion }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[Nivel educativo]",
+              "replaceText": "={{ $('find_ID').item.json.nivel_educativo }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[anos_experiencia]",
+              "replaceText": "={{ $('find_ID').item.json['años_experiencia'] }}"
+            },
+            {
+              "action": "=replaceAll",
+              "text": "[sectores]",
+              "replaceText": "={{ ($('find_ID').item.json.sectores || []).join(\", \") }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[anos_ejecutivos]",
+              "replaceText": "={{ $('find_ID').item.json.años_ejecutivos }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[anos_gerente]",
+              "replaceText": "={{ $('find_ID').item.json['años_gerencia'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[anos_docente]",
+              "replaceText": "={{ $('find_ID').item.json['años_docencia'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[anos_emprender]",
+              "replaceText": "={{ $('find_ID').item.json['años_emprendedor'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[pais_expe]",
+              "replaceText": "={{ ($('find_ID').item.json.paises_experiencia || []).join(\", \") }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[habilidades_blandas]",
+              "replaceText": "={{ ($('find_ID').item.json.habilidades_blandas || []).join(\", \") }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[señales_antif]",
+              "replaceText": "={{ ($('find_ID').item.json.senales_antifragilidad || []).join(\", \") }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[perfil_senior]",
+              "replaceText": "={{ $('find_ID').item.json.calificacion_senior }}"
+            }
+          ]
+        }
+      },
+      "id": "e78ca1a3-cc7b-4276-ac8e-f55520e274c9",
+      "name": "Update the expert letter",
+      "type": "n8n-nodes-base.googleDocs",
+      "position": [
+        1168,
+        -64
+      ],
+      "typeVersion": 2,
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "82fbyah9ZarWDwBV",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1bxV76KFfJfWXdJsZ_j8QXIz9Zz6EUV7QEB2tFS3Uicc",
+          "mode": "id"
+        },
+        "name": "=Perfil_Ejecutivo - {{ $json.nombre }}",
+        "options": {
+          "copyRequiresWriterPermission": false,
+          "description": ""
+        }
+      },
+      "id": "653015ac-101c-469c-8f9b-2c42045881c9",
+      "name": "Create a copy of the appointment letter template",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        944,
+        -64
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "xQHMQGBBJqTNdbAq",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "PerfilE",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        -64
+      ],
+      "id": "78f489d0-58b9-4166-8f7f-6bb6387df7e4",
+      "name": "Webhook",
+      "webhookId": "51731032-cb2b-497b-a221-18ba79e4e659"
+    },
+    {
+      "parameters": {
+        "formTitle": "Generate Perfil Ejecutivo",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "expert_id",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "21ad7206-562d-4b07-9ec1-ad441ac808cd",
+      "name": "form",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        240,
+        112
+      ],
+      "webhookId": "ad3bf9b7-c2a8-4a92-9dab-7d7da7e3a796",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Detectar origen y expertId\nconst expertId = items[0]?.json?.expert_Id || items[0]?.json?.body?.expert_Id || null;\n\nreturn {\n  json: {\n    expertid: expertId\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        0
+      ],
+      "id": "55d46399-1501-4a1d-a308-3e94caad3f1a",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.documentId }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1376,
+        -64
+      ],
+      "id": "31e636c7-8fa6-4f43-8fdc-dc758e06e5b3",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "xQHMQGBBJqTNdbAq",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "binary",
+        "responseDataSource": "set",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1584,
+        -64
+      ],
+      "id": "6218886a-8370-43c4-8aa7-0b8971dd085f",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "find_ID": {
+      "main": [
+        [
+          {
+            "node": "Create a copy of the appointment letter template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a copy of the appointment letter template": {
+      "main": [
+        [
+          {
+            "node": "Update the expert letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "form": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "find_ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update the expert letter": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "87e68872-3417-48ba-ae8c-c00a25a7913c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8665090424fcc3ade4a95f83e2eebafab6b01bf05620a456a38bc58cd60b4c74"
+  },
+  "id": "rdhzYHkRlIxK35WG",
+  "tags": []
+}
